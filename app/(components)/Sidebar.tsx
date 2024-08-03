@@ -1,4 +1,6 @@
 "use client";
+import { setIsSidebarCollapsed } from "@/state";
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   Archive,
   CircleDollarSign,
@@ -12,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { twMerge } from "tailwind-merge";
 
 interface SidebarLinkProps {
   href: string;
@@ -56,14 +59,36 @@ const SidebarLink = ({
 };
 
 const Sidebar = () => {
-  const isSidebarCollapsed = false;
-  return (
-    <div className="flex flex-col">
-      <div className="flex gap-3 justify-between">
-        <div>logo</div>
-        <h1 className="font-extrabold text-2xl">EDSTOCK</h1>
+  const { isSidebarCollapsed } = useAppSelector((state) => state.global);
+  const dispatch = useAppDispatch();
 
-        <button className="md:hidden p-3 bg-gray-100 rounded-full hover:bg-blue-100">
+  return (
+    <div
+      className={twMerge(
+        "fixed flex flex-col bg-white transition-all duration-300 overflow-hidden h-full shadow-md z-40",
+        isSidebarCollapsed ? "w-0 md:w-16" : "w-72 md:w-64"
+      )}
+    >
+      <div
+        className={twMerge(
+          "flex gap-3 justify-between md:justify-normal items-center pt-8",
+          isSidebarCollapsed ? "px-5" : "px-8"
+        )}
+      >
+        <div>logo</div>
+        <h1
+          className={twMerge(
+            "font-extrabold text-2xl",
+            isSidebarCollapsed ? "hidden" : "block"
+          )}
+        >
+          EDSTOCK
+        </h1>
+
+        <button
+          className="md:hidden p-3 bg-gray-100 rounded-full hover:bg-blue-100"
+          onClick={() => dispatch(setIsSidebarCollapsed(!isSidebarCollapsed))}
+        >
           <Menu className="size-4" />
         </button>
       </div>
@@ -106,7 +131,14 @@ const Sidebar = () => {
         />
       </div>
       <div>
-        <p className="text-center text-xs text-gray-500">&copy; 2024 Edstock</p>
+        <p
+          className={twMerge(
+            "text-center text-xs text-gray-500",
+            isSidebarCollapsed ? "hidden" : "block"
+          )}
+        >
+          &copy; 2024 Edstock
+        </p>
       </div>
     </div>
   );
